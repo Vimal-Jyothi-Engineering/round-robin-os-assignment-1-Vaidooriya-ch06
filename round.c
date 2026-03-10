@@ -8,56 +8,46 @@ struct process {
 };
 
 int main() {
-    int n, tq;
+    int n, time = 0, done = 0, quantum;
     scanf("%d", &n);
 
     struct process p[20];
+    int total_wt = 0, total_tat = 0;
 
+    // Input processes
     for(int i = 0; i < n; i++) {
         scanf("%s %d %d", p[i].pid, &p[i].at, &p[i].bt);
         p[i].rt = p[i].bt;
+        p[i].wt = 0;
+        p[i].tat = 0;
     }
 
-    scanf("%d", &tq);
+    scanf("%d", &quantum); // Time quantum
 
-    int time = 0, completed = 0;
-
-    while(completed < n) {
-        int done = 1;
-
+    int completed[20] = {0};
+    while(done < n) {
+        int flag = 0;
         for(int i = 0; i < n; i++) {
-
             if(p[i].rt > 0 && p[i].at <= time) {
-
-                done = 0;
-
-                if(p[i].rt > tq) {
-                    time += tq;
-                    p[i].rt -= tq;
-                }
-                else {
+                flag = 1;
+                if(p[i].rt > quantum) {
+                    time += quantum;
+                    p[i].rt -= quantum;
+                } else {
                     time += p[i].rt;
-                    p[i].ct = time;
+                    p[i].wt = time - p[i].at - p[i].bt;
+                    p[i].tat = p[i].wt + p[i].bt;
+                    total_wt += p[i].wt;
+                    total_tat += p[i].tat;
                     p[i].rt = 0;
-                    completed++;
+                    done++;
                 }
             }
         }
-
-        if(done)
-            time++;
+        if(!flag) time++; // If no process is ready, increment time
     }
 
-    float avg_wt = 0, avg_tat = 0;
-
-    for(int i = 0; i < n; i++) {
-        p[i].tat = p[i].ct - p[i].at;
-        p[i].wt = p[i].tat - p[i].bt;
-
-        avg_wt += p[i].wt;
-        avg_tat += p[i].tat;
-    }
-
+    // Print results
     printf("Waiting Time:\n");
     for(int i = 0; i < n; i++)
         printf("%s %d\n", p[i].pid, p[i].wt);
@@ -66,8 +56,11 @@ int main() {
     for(int i = 0; i < n; i++)
         printf("%s %d\n", p[i].pid, p[i].tat);
 
-    printf("Average Waiting Time: %.2f\n", avg_wt / n);
-    printf("Average Turnaround Time: %.2f\n", avg_tat / n);
+    float avg_wt = (float)total_wt / n;
+    float avg_tat = (float)total_tat / n;
+
+    printf("Average Waiting Time: %.2f\n", avg_wt);
+    printf("Average Turnaround Time: %.2f\n", avg_tat);
 
     return 0;
 }
