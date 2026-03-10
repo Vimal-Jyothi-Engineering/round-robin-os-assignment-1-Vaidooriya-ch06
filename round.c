@@ -8,7 +8,7 @@ struct process {
 };
 
 int main() {
-    int n, tq;
+    int n, q;
     scanf("%d", &n);
 
     struct process p[20];
@@ -18,37 +18,33 @@ int main() {
         p[i].rt = p[i].bt;
     }
 
-    scanf("%d", &tq);
+    scanf("%d", &q);
 
     int time = 0, completed = 0;
+    int executed;
+    float avg_wt = 0, avg_tat = 0;
 
     while(completed < n) {
-        int done = 1;
+        executed = 0;
 
         for(int i = 0; i < n; i++) {
-
-            if(p[i].rt > 0 && p[i].at <= time) {
-
-                done = 0;
-
-                if(p[i].rt > tq) {
-                    time += tq;
-                    p[i].rt -= tq;
-                }
-                else {
+            if(p[i].at <= time && p[i].rt > 0) {
+                executed = 1;
+                if(p[i].rt > q) {
+                    time += q;
+                    p[i].rt -= q;
+                } else {
                     time += p[i].rt;
-                    p[i].ct = time;
                     p[i].rt = 0;
+                    p[i].ct = time;
                     completed++;
                 }
             }
         }
 
-        if(done)
+        if(!executed)
             time++;
     }
-
-    float avg_wt = 0, avg_tat = 0;
 
     for(int i = 0; i < n; i++) {
         p[i].tat = p[i].ct - p[i].at;
@@ -66,8 +62,8 @@ int main() {
     for(int i = 0; i < n; i++)
         printf("%s %d\n", p[i].pid, p[i].tat);
 
-    printf("Average Waiting Time: %.2f\n", avg_wt / n);
-    printf("Average Turnaround Time: %.2f\n", avg_tat / n);
+    printf("Average Waiting Time: %.2f\n", avg_wt/n);
+    printf("Average Turnaround Time: %.2f\n", avg_tat/n);
 
     return 0;
 }
