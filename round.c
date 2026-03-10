@@ -21,12 +21,11 @@ int main() {
     scanf("%d", &q);
 
     int time = 0, completed = 0;
-    int executed;
+
     float avg_wt = 0, avg_tat = 0;
 
     while(completed < n) {
-        executed = 0;
-
+        int executed = 0;
         for(int i = 0; i < n; i++) {
             if(p[i].at <= time && p[i].rt > 0) {
                 executed = 1;
@@ -41,7 +40,6 @@ int main() {
                 }
             }
         }
-
         if(!executed)
             time++;
     }
@@ -49,7 +47,6 @@ int main() {
     for(int i = 0; i < n; i++) {
         p[i].tat = p[i].ct - p[i].at;
         p[i].wt = p[i].tat - p[i].bt;
-
         avg_wt += p[i].wt;
         avg_tat += p[i].tat;
     }
